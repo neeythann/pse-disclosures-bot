@@ -1,0 +1,23 @@
+name: Run python tests
+# TODO(nathan): semgrep workflow should run first before this workflow
+on:
+  workflow_dispatch: {}
+  pull_request:
+  push:
+    branches:
+      - '!main'
+    paths:
+      - "**.py"
+
+jobs:
+  pytest:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+      - name: run tests
+        run: |
+          uv run pytest -v
+
