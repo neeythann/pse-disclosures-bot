@@ -5,58 +5,108 @@ import requests
 import logging
 
 from bs4 import BeautifulSoup
-from bs4.element import NavigableString, PageElement, Tag
+from bs4.element import NavigableString, Tag
 from dataclasses import dataclass
-from os import getenv
 from time import sleep
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Union
+from urllib.parse import urlparse
 
-from .config import API_URLS
+from .config import Config
+from .db import Database
 
-WEBHOOK_URL = getenv("WEBHOOK_URL")
-if not WEBHOOK_URL:
-    raise ValueError("WEBHOOK_URL is not set")
-POLL_INTERVAL = 60 * 5 # 5 mins
+config = Config()
+
+TABLE_BY_KEY = {
+    "announcement": "company_disclosures",
+    "financial": "company_disclosures",
+    "other": "company_disclosures",
+    "dividends": "dividends",
+    "rights": "stock_rights",
+}
+
+
+def _rows(soup: Tag) -> List[Tag]:
+    assert soup.table is not None
+    assert soup.table.tbody is not None
+    return [r for r in soup.table.tbody if not isinstance(r, NavigableString)]
+
+
+def _cell_text(cell: Tag) -> str:
+    return cell.get_text()
+
+
+def _edge_no(cell: Tag) -> str:
+    a = cell.find("a")
+    return a["onclick"].split("'")[1] #pyright: ignore
+
+
+class Webhook:
+    url: str
+    data: Any
+
+    def _format_data(self) -> Dict[Any, Any]:
+        raise NotImplementedError
+
+    def send(self) -> None:
+        raise NotImplementedError
 
 
 @dataclass
-class DiscordWebhook:
+class DiscordWebhook(Webhook):
     url: str
-    data: CompanyDisclosure
+    data: Union["CompanyDisclosure", "Dividend", "StockRights"]
 
     def _format_data(self) -> Dict[Any, Any]:
         return {
             "username": "PSE Disclosure",
             "avatar_url": "",
-            "embeds": [
-                {
-                    "author": {
-                        "name": self.data.company_name,
-                        "url": "https://edge.pse.com.ph{}".format(self.data._id)
-                    },
-                    "title": self.data.title,
-                    "url": "https://edge.pse.com.ph/openDiscViewer.do?edge_no={}".format(self.data.edge_no),
-                    "fields": [
-                        {
-                            "name":"Circular number",
-                            "value": self.data.circular_number,
-                            "inline": True
-                        },
-                        {
-                            "name":"Form Type",
-                            "value": self.data.form_type,
-                            "inline": True
-                        },
-                    ],
-                    "footer": {
-                        "text": self.data.date
-                    }
-                },
-            ]
+            "embeds": [self.data.to_embed()],
         }
 
     def send(self) -> None:
         requests.post(self.url, json=self._format_data(), headers={"Content-Type": "application/json"})
+
+
+@dataclass
+class SlackWebhook(Webhook):
+    url: str
+    data: Union["CompanyDisclosure", "Dividend", "StockRights"]
+
+    def _format_data(self) -> Dict[Any, Any]:
+        embed = self.data.to_embed()
+        attachment: Dict[Any, Any] = {}
+        author = embed.get("author")
+        if author:
+            if author.get("name"):
+                attachment["author_name"] = author["name"]
+            if author.get("url"):
+                attachment["author_link"] = author["url"]
+        if embed.get("title"):
+            attachment["title"] = embed["title"]
+        if embed.get("url"):
+            attachment["title_link"] = embed["url"]
+        fields = embed.get("fields")
+        if fields:
+            attachment["fields"] = [
+                {"title": f["name"], "value": f["value"], "short": f.get("inline", False)}
+                for f in fields
+            ]
+        footer = embed.get("footer")
+        if footer and footer.get("text"):
+            attachment["footer"] = footer["text"]
+        return {"attachments": [attachment]}
+
+    def send(self) -> None:
+        requests.post(self.url, json=self._format_data(), headers={"Content-Type": "application/json"})
+
+
+def create_webhook(url: str, data: Any) -> Webhook:
+    host = urlparse(url).netloc.lower()
+    if "discord.com" in host or "discordapp.com" in host:
+        return DiscordWebhook(url, data)
+    if "hooks.slack.com" in host:
+        return SlackWebhook(url, data)
+    raise ValueError("No webhook sender configured for URL host: {}".format(host))
 
 
 @dataclass(unsafe_hash=True)
@@ -71,80 +121,287 @@ class CompanyDisclosure:
 
     @staticmethod
     def parse_tag(soup: Tag) -> List[CompanyDisclosure]:
-        rtn = []
+        return [CompanyDisclosure.parse(r) for r in _rows(soup)]
 
-        assert soup.table is not None
-        assert soup.table.tbody is not None
-
-        for company in soup.table.tbody:
-            if isinstance(company, NavigableString):
-                continue
-            rtn.append(CompanyDisclosure.parse(company))
-
-        return rtn
-
-    # TODO(nathan): refactor this linked list madness and add element validation
     @classmethod
-    def parse(cls, data: PageElement) -> CompanyDisclosure:
-        data = data.next_element.next_element.next_element #pyright: ignore
+    def parse(cls, row: Tag) -> CompanyDisclosure:
+        tds = row.find_all("td")
+        company_a = tds[0].find("a")
+        return cls(
+            _id=company_a["href"], #pyright: ignore
+            company_name=_cell_text(tds[0]),
+            edge_no=_edge_no(tds[1]),
+            title=_cell_text(tds[1]),
+            form_type=_cell_text(tds[2]),
+            date=_cell_text(tds[3]),
+            circular_number=_cell_text(tds[4]),
+        )
 
-        _id = data['href'] #pyright: ignore
-        company_name = data.text
-        data = data.next_element.next_element.next_element.next_element #pyright: ignore
+    def to_embed(self) -> Dict[Any, Any]:
+        return {
+            "author": {
+                "name": self.company_name,
+                "url": "https://edge.pse.com.ph{}".format(self._id)
+            },
+            "title": self.title,
+            "url": "https://edge.pse.com.ph/openDiscViewer.do?edge_no={}".format(self.edge_no),
+            "fields": [
+                {
+                    "name": "Circular number",
+                    "value": self.circular_number,
+                    "inline": True
+                },
+                {
+                    "name": "Form Type",
+                    "value": self.form_type,
+                    "inline": True
+                },
+            ],
+            "footer": {
+                "text": self.date
+            }
+        }
 
-        edge_no = data['onclick'].split("'")[1] #pyright: ignore
-        data = data.next_element #pyright: ignore
 
-        title = data.text
-        data = data.next_element.next_element.next_element #pyright: ignore
+@dataclass(unsafe_hash=True)
+class Dividend:
+    _id: str
+    company_name: str
+    security_type: str
+    dividend_type: str
+    rate: str
+    ex_date: str
+    record_date: str
+    payment_date: str
+    edge_no: str
+    circular_number: str
 
-        form_type = data.text
-        data = data.next_element.next_element.next_element #pyright: ignore
+    @staticmethod
+    def parse_tag(soup: Tag) -> List[Dividend]:
+        return [Dividend.parse(r) for r in _rows(soup)]
 
-        date = data.text
-        data = data.next_element.next_element.next_element #pyright: ignore
+    @classmethod
+    def parse(cls, row: Tag) -> Dividend:
+        tds = row.find_all("td")
+        company_a = tds[0].find("a")
+        return cls(
+            _id=company_a["href"], #pyright: ignore
+            company_name=_cell_text(tds[0]),
+            security_type=_cell_text(tds[1]),
+            dividend_type=_cell_text(tds[2]),
+            rate=_cell_text(tds[3]),
+            ex_date=_cell_text(tds[4]),
+            record_date=_cell_text(tds[5]),
+            payment_date=_cell_text(tds[6]),
+            edge_no=_edge_no(tds[-1]),
+            circular_number=_cell_text(tds[-1]),
+        )
 
-        circular_number = data.text
-        return cls(_id, company_name, title, edge_no, form_type, date, circular_number)
+    def to_embed(self) -> Dict[Any, Any]:
+        return {
+            "author": {
+                "name": self.company_name,
+                "url": "https://edge.pse.com.ph{}".format(self._id)
+            },
+            "title": "{} Dividend - {}".format(self.dividend_type, self.security_type),
+            "url": "https://edge.pse.com.ph/openDiscViewer.do?edge_no={}".format(self.edge_no),
+            "fields": [
+                {
+                    "name": "Dividend Rate",
+                    "value": self.rate,
+                    "inline": True
+                },
+                {
+                    "name": "Ex-Dividend Date",
+                    "value": self.ex_date,
+                    "inline": True
+                },
+                {
+                    "name": "Record Date",
+                    "value": self.record_date,
+                    "inline": True
+                },
+                {
+                    "name": "Payment Date",
+                    "value": self.payment_date,
+                    "inline": True
+                },
+            ],
+            "footer": {
+                "text": self.circular_number
+            }
+        }
+
+
+@dataclass(unsafe_hash=True)
+class StockRights:
+    _id: str
+    company_name: str
+    entitlement_ratio: str
+    offer_price: str
+    ex_rights_date: str
+    offer_start: str
+    offer_end: str
+    edge_no: str
+    circular_number: str
+
+    @staticmethod
+    def parse_tag(soup: Tag) -> List[StockRights]:
+        return [StockRights.parse(r) for r in _rows(soup)]
+
+    @classmethod
+    def parse(cls, row: Tag) -> StockRights:
+        tds = row.find_all("td")
+        company_a = tds[0].find("a")
+        return cls(
+            _id=company_a["href"], #pyright: ignore
+            company_name=_cell_text(tds[0]),
+            entitlement_ratio=_cell_text(tds[1]),
+            offer_price=_cell_text(tds[2]),
+            ex_rights_date=_cell_text(tds[3]),
+            offer_start=_cell_text(tds[4]),
+            offer_end=_cell_text(tds[5]),
+            edge_no=_edge_no(tds[-1]),
+            circular_number=_cell_text(tds[-1]),
+        )
+
+    def to_embed(self) -> Dict[Any, Any]:
+        return {
+            "author": {
+                "name": self.company_name,
+                "url": "https://edge.pse.com.ph{}".format(self._id)
+            },
+            "title": "Stock Rights Offering",
+            "url": "https://edge.pse.com.ph/openDiscViewer.do?edge_no={}".format(self.edge_no),
+            "fields": [
+                {
+                    "name": "Entitlement Ratio",
+                    "value": self.entitlement_ratio,
+                    "inline": True
+                },
+                {
+                    "name": "Offer Price",
+                    "value": self.offer_price,
+                    "inline": True
+                },
+                {
+                    "name": "Ex-Rights Date",
+                    "value": self.ex_rights_date,
+                    "inline": True
+                },
+                {
+                    "name": "Offer Start",
+                    "value": self.offer_start,
+                    "inline": True
+                },
+                {
+                    "name": "Offer End",
+                    "value": self.offer_end,
+                    "inline": True
+                },
+            ],
+            "footer": {
+                "text": self.circular_number
+            }
+        }
+
+
+def _fetch(key: str, url: str, data: Dict[str, str] = None) -> Any: #pyright: ignore
+    if data is not None:
+        response = requests.post(url, data=data, headers=config.headers)
+    else:
+        response = requests.get(url, headers=config.headers)
+
+    if response is None:
+        logging.error("Got empty response on endpoint: {}".format(key))
+        return None
+
+    if response.status_code != 200:
+        logging.error("Got response status: {}".format(response.status_code))
+        return None
+
+    return response
+
+
+def _notify(items: List[Any]) -> None:
+    for item in items:
+        if config.mode in ("both", "webhook"):
+            for url in config.webhook_urls:
+                create_webhook(url, item).send() #pyright: ignore
+        logging.info("New disclosure found: {}".format(item.circular_number))
+
+
+def _diff_and_send(key: str, curr: List[Any], db: Database) -> None:
+    table = TABLE_BY_KEY[key]
+
+    if db.is_empty(table) and curr:
+        db.insert(table, curr)
+        logging.info("Seeded {} with {} initial items".format(table, len(curr)))
+        return
+
+    existing = db.get_existing_edge_nos(table, [item.edge_no for item in curr])
+    new_items = [item for item in curr if item.edge_no not in existing]
+    if not new_items:
+        return
+
+    _notify(new_items)
+    db.insert(table, new_items)
+
+
+def _diff_and_send_mem(key: str, curr: List[Any], cache: Dict[str, list]) -> None:
+    if key not in cache:
+        logging.info("Cache is empty, supplying current scraped data to cache")
+        cache[key] = curr
+        return
+
+    if cache[key] != curr:
+        diff = list(set(curr) - set(cache[key]))
+        _notify(diff)
+        cache[key] = curr
 
 
 def main():
-    # pragmatic engineering here lol
     data = {"fromDate": "10-10-25", "toDate": "10-11-2099"}
-    cache: Dict[str, List[CompanyDisclosure]] = {}
+    db = Database() if config.mode in ("both", "archive") else None
+    cache: Dict[str, list] = {}
+
+    if config.mode == "archive":
+        logging.info("Running in archive-only mode (no webhook notifications)")
+    elif config.mode == "webhook":
+        logging.info("Running in webhook-only mode (no SQLite archive; restarts may re-send)")
 
     # TODO: wrap in exceptions
     while True:
-        for key, value in API_URLS.items():
-            response = requests.post(value, data=data, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.5938.149 Safari/537.36"})
-
+        for key, value in config.api_urls.items():
+            response = _fetch(key, value, data)
             if response is None:
-                logging.error("Got empty response on endpoint: {}".format(key))
-                continue
-
-            if response.status_code != 200:
-                logging.error("Got response status: {}".format(response.status_code))
                 continue
 
             soup = BeautifulSoup(response.content, 'html.parser')
             curr = CompanyDisclosure.parse_tag(soup)
+            if db is not None:
+                _diff_and_send(key, curr, db)
+            else:
+                _diff_and_send_mem(key, curr, cache)
+            sleep(random.randint(2, 5))
 
-            if key not in cache:
-                logging.info("Cache is empty, supplying current scraped data to cache")
-                cache[key] = curr
+        for key, value in config.dividends_rights_urls.items():
+            response = _fetch(key, value)
+            if response is None:
                 continue
 
-            if cache[key] != curr:
-                diff = list(set(curr) - set(cache[key]))
-                for item in diff:
-                    DiscordWebhook(WEBHOOK_URL, item).send() #pyright: ignore
-                    logging.info("New disclosure found: {}".format(item.circular_number))
+            soup = BeautifulSoup(response.content, 'html.parser')
+            if key == "dividends":
+                curr = Dividend.parse_tag(soup)
+            else:
+                curr = StockRights.parse_tag(soup)
+            if db is not None:
+                _diff_and_send(key, curr, db)
+            else:
+                _diff_and_send_mem(key, curr, cache)
+            sleep(random.randint(2, 5))
 
-                cache[key] = curr
-
-            sleep(random.randint(2,5))
-
-        sleep(POLL_INTERVAL)
+        sleep(config.poll_interval)
 
 
 if __name__ == "__main__":

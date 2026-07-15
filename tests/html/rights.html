@@ -1,0 +1,195 @@
+<script type="text/javascript">
+function goTab(val){
+  searchList({url:'/disclosureData/dividends_and_rights_info_list.ax?DividendsOrRights=' + val,form:'#listForm'});
+}
+
+function goPage(val){
+  $("#pageNum").val(val);
+  searchList({url:'/disclosureData/dividends_and_rights_info_list.ax?DividendsOrRights=Rights',form:'#listForm'});
+}
+
+function goSort(sortMode, sortType){
+  if ("DESC" == sortType) {
+    sortType = "ASC";
+  } else {
+    sortType = "DESC";
+  }
+
+  $("#sortMode").val(sortMode);
+
+  if ("date" == sortMode) {
+    $("#dateSortType").val(sortType);
+    $("#cmpySortType").val("ASC");
+  } else {
+    $("#cmpySortType").val(sortType);
+    $("#dateSortType").val("DESC");
+  }
+
+  searchList({url:'/disclosureData/dividends_and_rights_info_list.ax?DividendsOrRights=Rights',form:'#listForm'});
+}
+</script>
+<form id="listForm" name="listForm">
+  <input type="hidden" name="pageNum" id="pageNum" value=""/>
+  <input type="hidden" name="sortMode" id="sortMode" value="date"/>
+  <input type="hidden" name="dateSortType" id="dateSortType" value="DESC"/>
+  <input type="hidden" name="cmpySortType" id="cmpySortType" value="ASC"/>
+</form>
+<p class="btnTab">
+  <a href="#Dividends" onclick="goTab('Dividends');return false;"><img src="/images/common/btn_dividends.gif" alt="Dividends"/></a>
+  <a href="#Rights" onclick="goTab('Rights');return false;"><img src="/images/common/btn_rights_on.gif" alt="Rights"/></a>
+</p>
+
+<h4>Stock Rights Information</h4>
+
+<span class="count">
+
+[1 /
+1]
+[Total 11]
+</span>
+<p class="sort">
+  <a href="#sort" class="select" onclick="goSort('date','DESC');return false;"><span>date</span></a>
+  <a href="#sort"  onclick="goSort('cmpy','ASC');return false;"><span>company</span></a>
+</p>
+
+<table class="list">
+<colgroup>
+  <col width="20%"/>
+  <col width="13%"/>
+  <col width="13%"/>
+  <col width="15%"/>
+  <col width="13%"/>
+  <col width="13%"/>
+  <col width="13%"/>
+</colgroup>
+<thead>
+  <tr>
+    <th>Company Name</th>
+    <th>Entitlement Ratio</th>
+    <th>Offer Price</th>
+    <th>Ex-Rights Date</th>
+    <th>Start of Offer Period</th>
+    <th>End of Offer Period</th>
+    <th>Circular Number</th>
+  </tr>
+</thead>
+<tbody>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=698">LFM Properties Corporation</a></td>
+    <td class="alignR">TBA</td>
+    <td class="alignR">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('506b63ff2917d47aec6e1601ccee8f59');return false;">C08857-2025</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=233">ACEN CORPORATION</a></td>
+    <td class="alignR">TBA</td>
+    <td class="alignR">TBA subject to minimum of Php2.30 per offer share</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('2e74c55b586ac6d4ec6e1601ccee8f59');return false;">C02626-2025</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=98">Lepanto Consolidated Mining Company</a></td>
+    <td class="alignR">1 share for every 3.95 shares held</td>
+    <td class="alignR">0.12 per share</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('10bdc3b3b829f2d73470cea4b051ca8f');return false;">C06911-2022</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=187">DFNN, Inc.</a></td>
+    <td class="alignR">1 share for every 2 shares owned</td>
+    <td class="alignR">Market price (w/ a 20% discount)</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('cdbe9d009b56057c3470cea4b051ca8f');return false;">C03604-2022</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=36">DITO CME Holdings Corp.</a></td>
+    <td class="alignR">TBA</td>
+    <td class="alignR">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('d907a11d0fe115803470cea4b051ca8f');return false;">C00510-2022</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=619">AgriNurture, Inc.</a></td>
+    <td class="alignR">1 stock rights share for every 2.5 shares held</td>
+    <td class="alignR">Php 1.00</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('499d5022301c00a65d542af6f1e997b9');return false;">C05811-2021</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=24">MJC Investments Corporation</a></td>
+    <td class="alignR">One (1) Rights Share for every Two (2) Common Shares held as of Record Date</td>
+    <td class="alignR">Please see &#034;Other Relevant Information&#034;</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('634e59a0235218eb43ca035510b6ec2b');return false;">C06179-2018</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=48">Acesite (Phils.) Hotel Corporation</a></td>
+    <td class="alignR">1:1</td>
+    <td class="alignR">TO BE ANNOUNCED.</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('43b5a8d21121c637b15effbf9088d1ab');return false;">C04818-2015</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=145">Macay Holdings, Inc.</a></td>
+    <td class="alignR">1 Rights Share for every 50 Common Shares held as of Record Date</td>
+    <td class="alignR">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('08961e384bae08bab15effbf9088d1ab');return false;">C00919-2015</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=48">Acesite (Phils.) Hotel Corporation</a></td>
+    <td class="alignR">1:1</td>
+    <td class="alignR">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('1cfc6b261f7b46481db82e377ee70f3b');return false;">C03800-2014</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=163">TKC Metals Corporation</a></td>
+    <td class="alignR">1.38 Rights Shares for every Common Share presently held, with Bonus Warrants to be given for each Rights Share to be subscribed at 1 Warrant fore every 3 Rights Shares.</td>
+    <td class="alignR">P2.00 per Rights Share</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC">TBA</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('1be4004c92cb86af1db82e377ee70f3b');return false;">C03503-2014</a></td>
+  </tr>
+</tbody>
+</table>
+
+<div class="paging"><a href="#" onclick="return false;"><img src="/images/common/icon_first.gif" alt="first page"/></a>
+<a href="#" onclick="return false;"><img src="/images/common/icon_prev.gif" alt="prev block"/></a>
+<span>1</span>
+<a href="#" onclick="return false;"><img src="/images/common/icon_next.gif" alt="next block"/></a>
+<a href="#" onclick="return false;"><img src="/images/common/icon_end.gif" alt="last page"/></a></div><p class="disclaimer">
+<span style="font-size:105%;">DISCLAIMER</span><br/>
+The data, information and other contents (the "Contents") appearing on or accessible through
+http://www.exchange.com may not have been prepared by the Exchange but is made available without any responsibility
+on the part of the PSE, or even if prepared by the PSE, is provided on an as is or as available basis.
+The PSE does not guarantee the accuracy, timeliness, completeness,
+performance or fitness for a particular purpose of any and all Contents of this page.
+Your access to and use of this page and its Contents is subject to all applicable international
+and local laws and regulations and the terms and conditions imposed by the PSE under our
+<a href="/page/disclaimer.do">[Disclaimer and Access and Usage Restrictions]</a>.
+By continuing to access and use this page and its Contents, you shall be deemed to have read, understood,
+and agreed to, said terms and conditions.
+</p><a href="https://edge.pse.com.ph/cdn-cgi/content?id=nAI4VBH8_kjPuAfdGsJD8YyEt53o_c5fAd1ckTI7h_o-1784152550.5761168-1.2.1.1-aCZK8U9xNBWZbcyuQB6tT6XSYS3Au93dzPMfpiOxPh8" aria-hidden="true" rel="nofollow noopener" style="display: none !important; visibility: hidden !important"></a>

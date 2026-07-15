@@ -1,0 +1,608 @@
+<script type="text/javascript">
+function goTab(val){
+  searchList({url:'/disclosureData/dividends_and_rights_info_list.ax?DividendsOrRights=' + val,form:'#listForm'});
+}
+
+function goPage(val){
+  $("#pageNum").val(val);
+  searchList({url:'/disclosureData/dividends_and_rights_info_list.ax?DividendsOrRights=Dividends',form:'#listForm'});
+}
+
+function goSort(sortMode, sortType){
+  if ("DESC" == sortType) {
+    sortType = "ASC";
+  } else {
+    sortType = "DESC";
+  }
+
+  $("#sortMode").val(sortMode);
+
+  if ("date" == sortMode) {
+    $("#dateSortType").val(sortType);
+    $("#cmpySortType").val("ASC");
+  } else {
+    $("#cmpySortType").val(sortType);
+    $("#dateSortType").val("DESC");
+  }
+
+  searchList({url:'/disclosureData/dividends_and_rights_info_list.ax?DividendsOrRights=Dividends',form:'#listForm'});
+}
+</script>
+
+<form id="listForm" name="listForm">
+  <input type="hidden" name="pageNum" id="pageNum" value=""/>
+  <input type="hidden" name="sortMode" id="sortMode" value="date"/>
+  <input type="hidden" name="dateSortType" id="dateSortType" value="DESC"/>
+  <input type="hidden" name="cmpySortType" id="cmpySortType" value="ASC"/>
+</form>
+<p class="btnTab">
+  <a href="#tab" onclick="goTab('Dividends');return false;"><img src="/images/common/btn_dividends_on.gif" alt="Dividends" /></a>
+  <a href="#tab" onclick="goTab('Rights');return false;"><img src="/images/common/btn_rights.gif" alt="Rights" /></a>
+</p>
+
+<h4>Dividend Information</h4>
+
+<span class="count">
+
+[1 /
+11]
+[Total 520]
+</span>
+<p class="sort">
+  <a href="#sort" class="select" onclick="goSort('date','DESC');return false;" title="Payment date"><span>date</span></a>
+  <a href="#sort"  onclick="goSort('cmpy','ASC');return false;"><span>company</span></a>
+</p>
+
+<table class="list">
+<colgroup>
+  <col width="20%"/>
+  <col width="10%"/>
+  <col width="10%"/>
+  <col width="12%"/>
+  <col width="12%"/>
+  <col width="12%"/>
+  <col width="12%"/>
+  <col width="12%"/>
+</colgroup>
+<thead>
+  <tr>
+    <th>Company Name</th>
+    <th>Type of Security</th>
+    <th>Type of Dividend</th>
+    <th>Dividend Rate</th>
+    <th>Ex-Dividend Date</th>
+    <th>Record Date</th>
+    <th>Payment Date</th>
+    <th>Circular Number</th>
+  </tr>
+</thead>
+<tbody>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=13">A Brown Company, Inc.</a></td>
+    <td class="alignC">BRNPB Series B</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php 2.0625 per share</td>
+    <td class="alignC">Feb 08, 2027</td>
+    <td class="alignC">Feb 9, 2027</td>
+    <td class="alignC">Feb 23, 2027</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('f6547bd542fbf07f64d70b69f0a3140b');return false;">C00595-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=13">A Brown Company, Inc.</a></td>
+    <td class="alignC">BRNPC Series C</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php 2.1875 per share</td>
+    <td class="alignC">Feb 08, 2027</td>
+    <td class="alignC">Feb 9, 2027</td>
+    <td class="alignC">Feb 23, 2027</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('2722e0a2a8686c9864d70b69f0a3140b');return false;">C00592-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=641">Asia United Bank Corporation</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">P0.50</td>
+    <td class="alignC">Dec 01, 2026</td>
+    <td class="alignC">Dec 2, 2026</td>
+    <td class="alignC">Dec 18, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('2eaed340b265656164d70b69f0a3140b');return false;">C04854-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=13">A Brown Company, Inc.</a></td>
+    <td class="alignC">BRNP Series A</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php 1.75 per share</td>
+    <td class="alignC">Nov 04, 2026</td>
+    <td class="alignC">Nov 5, 2026</td>
+    <td class="alignC">Dec 1, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('7c8a261f8441009264d70b69f0a3140b');return false;">C00602-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=13">A Brown Company, Inc.</a></td>
+    <td class="alignC">BRNPB Series B</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php 2.0625 per share</td>
+    <td class="alignC">Nov 04, 2026</td>
+    <td class="alignC">Nov 5, 2026</td>
+    <td class="alignC">Nov 23, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('d7e571e4e1986e3164d70b69f0a3140b');return false;">C00597-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=13">A Brown Company, Inc.</a></td>
+    <td class="alignC">BRNPC Series C</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php 2.1875 per share</td>
+    <td class="alignC">Nov 04, 2026</td>
+    <td class="alignC">Nov 5, 2026</td>
+    <td class="alignC">Nov 23, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('b317fb65a07d794064d70b69f0a3140b');return false;">C00593-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=189">Century Properties Group, Inc.</a></td>
+    <td class="alignC">CPGPB</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">PHP 1.8858 per share</td>
+    <td class="alignC">Oct 26, 2026</td>
+    <td class="alignC">Oct 27, 2026</td>
+    <td class="alignC">Nov 23, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('fd843c6425c971de64d70b69f0a3140b');return false;">C00102-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=694">Raslag Corp.</a></td>
+    <td class="alignC">RSLG1</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php18.7563</td>
+    <td class="alignC">Oct 19, 2026</td>
+    <td class="alignC">Oct 20, 2026</td>
+    <td class="alignC">Oct 30, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('16dd8bb2400febf564d70b69f0a3140b');return false;">C02291-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=633">GT Capital Holdings, Inc.</a></td>
+    <td class="alignC">GTPPB</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php12.73725</td>
+    <td class="alignC">Oct 02, 2026</td>
+    <td class="alignC">Oct 5, 2026</td>
+    <td class="alignC">Oct 27, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('b4925c92044c5cf6ec6e1601ccee8f59');return false;">C08655-2025</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=478">The Philippine Stock Exchange, Inc.</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php5.50</td>
+    <td class="alignC">Sep 30, 2026</td>
+    <td class="alignC">Oct 1, 2026</td>
+    <td class="alignC">Oct 12, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('263cd7cb005fe1d064d70b69f0a3140b');return false;">C02816-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=668">Cebu Landmasters, Inc.</a></td>
+    <td class="alignC">CLIA2</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php 20.625</td>
+    <td class="alignC">Oct 01, 2026</td>
+    <td class="alignC">Oct 2, 2026</td>
+    <td class="alignC">Oct 12, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('62c9d1b55784acb6ec6e1601ccee8f59');return false;">C07888-2025</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=668">Cebu Landmasters, Inc.</a></td>
+    <td class="alignC">CLIA1</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php 18.9625</td>
+    <td class="alignC">Oct 01, 2026</td>
+    <td class="alignC">Oct 2, 2026</td>
+    <td class="alignC">Oct 12, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('4b2b6c62ba811617ec6e1601ccee8f59');return false;">C07875-2025</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=607">Vista Land &amp; Lifescapes, Inc.</a></td>
+    <td class="alignC">VLL2A</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php 1.9973</td>
+    <td class="alignC">Sep 11, 2026</td>
+    <td class="alignC">Sep 14, 2026</td>
+    <td class="alignC">Oct 4, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('5f1743059caca1d2ec6e1601ccee8f59');return false;">C08331-2025</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=607">Vista Land &amp; Lifescapes, Inc.</a></td>
+    <td class="alignC">VLL2B</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php 2.100</td>
+    <td class="alignC">Sep 11, 2026</td>
+    <td class="alignC">Sep 14, 2026</td>
+    <td class="alignC">Oct 4, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('47395908040dbaabec6e1601ccee8f59');return false;">C08329-2025</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=139">Philippine National Bank</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">P1.65</td>
+    <td class="alignC">Sep 17, 2026</td>
+    <td class="alignC">Sep 18, 2026</td>
+    <td class="alignC">Oct 1, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('27bb570b60c1431064d70b69f0a3140b');return false;">C01290-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=641">Asia United Bank Corporation</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">P1.00</td>
+    <td class="alignC">Sep 11, 2026</td>
+    <td class="alignC">Sep 14, 2026</td>
+    <td class="alignC">Sep 30, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('56bc51a5ebed130b64d70b69f0a3140b');return false;">C04853-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=50">Cosco Capital, Inc.</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">P0.133/Share</td>
+    <td class="alignC">Aug 19, 2026</td>
+    <td class="alignC">Aug 20, 2026</td>
+    <td class="alignC">Sep 14, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('17e7d42e88df884d64d70b69f0a3140b');return false;">C02301-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=629">Puregold Price Club, Inc.</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">P0.79/Share</td>
+    <td class="alignC">Aug 14, 2026</td>
+    <td class="alignC">Aug 17, 2026</td>
+    <td class="alignC">Sep 9, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('7a330ef5762024bd64d70b69f0a3140b');return false;">C02317-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=13">A Brown Company, Inc.</a></td>
+    <td class="alignC">BRNP Series A</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php 1.75 per share</td>
+    <td class="alignC">Aug 04, 2026</td>
+    <td class="alignC">Aug 5, 2026</td>
+    <td class="alignC">Sep 1, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('210c9ce4e80e0e6264d70b69f0a3140b');return false;">C00599-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=681">DDMP REIT, Inc.</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php 0.02425300</td>
+    <td class="alignC">Jul 30, 2026</td>
+    <td class="alignC">Jul 31, 2026</td>
+    <td class="alignC">Aug 27, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('c3df73b75f9aed6e64d70b69f0a3140b');return false;">C04735-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=224">Global Ferronickel Holdings, Inc.</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php 0.0603</td>
+    <td class="alignC">Jul 29, 2026</td>
+    <td class="alignC">Jul 30, 2026</td>
+    <td class="alignC">Aug 25, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('bce5232fc3eb476164d70b69f0a3140b');return false;">C04572-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=13">A Brown Company, Inc.</a></td>
+    <td class="alignC">BRNPC Series C</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php 2.1875 per share</td>
+    <td class="alignC">Aug 04, 2026</td>
+    <td class="alignC">Aug 5, 2026</td>
+    <td class="alignC">Aug 24, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('6931bbaa6adaf0ed64d70b69f0a3140b');return false;">C00605-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=13">A Brown Company, Inc.</a></td>
+    <td class="alignC">BRNPB Series B</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php 2.0625 per share</td>
+    <td class="alignC">Aug 04, 2026</td>
+    <td class="alignC">Aug 5, 2026</td>
+    <td class="alignC">Aug 24, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('9601be9f668effb264d70b69f0a3140b');return false;">C00603-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=189">Century Properties Group, Inc.</a></td>
+    <td class="alignC">CPGPB</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">PHP 1.8858 per share</td>
+    <td class="alignC">Jul 27, 2026</td>
+    <td class="alignC">Jul 28, 2026</td>
+    <td class="alignC">Aug 24, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('53177a6d0e8d5dd564d70b69f0a3140b');return false;">C00101-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=172">Arthaland Corporation</a></td>
+    <td class="alignC">Series F (ALCPF) ONLY</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">PhP9.1575</td>
+    <td class="alignC">Jul 20, 2026</td>
+    <td class="alignC">Jul 21, 2026</td>
+    <td class="alignC">Aug 14, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('b075db961ca7e51064d70b69f0a3140b');return false;">C04836-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=703">Citicore Renewable Energy Corporation</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php0.0224</td>
+    <td class="alignC">Jul 16, 2026</td>
+    <td class="alignC">Jul 17, 2026</td>
+    <td class="alignC">Aug 12, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('ace175423818de0c64d70b69f0a3140b');return false;">C04487-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=652">Century Pacific Food, Inc.</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Thirty Centavos</td>
+    <td class="alignC">Jul 20, 2026</td>
+    <td class="alignC">Jul 21, 2026</td>
+    <td class="alignC">Aug 10, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('6cb1dddf88e1439664d70b69f0a3140b');return false;">C04959-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=75">Filinvest Development Corporation</a></td>
+    <td class="alignC">FDCPB</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">FDCPB – Php17.7720</td>
+    <td class="alignC">Jul 22, 2026</td>
+    <td class="alignC">Jul 23, 2026</td>
+    <td class="alignC">Aug 8, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('e01bba592ae72cff64d70b69f0a3140b');return false;">C05194-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=75">Filinvest Development Corporation</a></td>
+    <td class="alignC">FDCPA</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">FDCPA – Php16.5630</td>
+    <td class="alignC">Jul 22, 2026</td>
+    <td class="alignC">Jul 23, 2026</td>
+    <td class="alignC">Aug 8, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('900f0351fae7409c64d70b69f0a3140b');return false;">C05193-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=160">Solid Group, Inc.</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php0.10</td>
+    <td class="alignC">Jul 14, 2026</td>
+    <td class="alignC">Jul 15, 2026</td>
+    <td class="alignC">Aug 7, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('98ddb510a5cc357564d70b69f0a3140b');return false;">C04797-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=627">Megawide Construction Corporation</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">PhP0.145</td>
+    <td class="alignC">Jul 22, 2026</td>
+    <td class="alignC">Jul 23, 2026</td>
+    <td class="alignC">Aug 7, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('3d866d672fad93c464d70b69f0a3140b');return false;">C04674-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=664">Shakey&#039;s Pizza Asia Ventures, Inc.</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Twenty Centavos</td>
+    <td class="alignC">Jul 16, 2026</td>
+    <td class="alignC">Jul 17, 2026</td>
+    <td class="alignC">Aug 6, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('eada87bb4a9ca64b64d70b69f0a3140b');return false;">C04711-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=57">Ayala Corporation</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php5.00</td>
+    <td class="alignC">Jul 16, 2026</td>
+    <td class="alignC">Jul 17, 2026</td>
+    <td class="alignC">Jul 31, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('94c955dd7c7c5c7064d70b69f0a3140b');return false;">C05077-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=172">Arthaland Corporation</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php0.012</td>
+    <td class="alignC">Jul 09, 2026</td>
+    <td class="alignC">Jul 10, 2026</td>
+    <td class="alignC">Jul 31, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('0ef2d4c13abd4a4764d70b69f0a3140b');return false;">C04835-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=77">RFM Corporation</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php0.08903</td>
+    <td class="alignC">Jul 07, 2026</td>
+    <td class="alignC">Jul 8, 2026</td>
+    <td class="alignC">Jul 31, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('b71207ddf749ce9c64d70b69f0a3140b');return false;">C04712-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=641">Asia United Bank Corporation</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">P1.00</td>
+    <td class="alignC">Jul 09, 2026</td>
+    <td class="alignC">Jul 10, 2026</td>
+    <td class="alignC">Jul 30, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('18008afb601f12d364d70b69f0a3140b');return false;">C04852-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=694">Raslag Corp.</a></td>
+    <td class="alignC">RSLG1</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php18.7563</td>
+    <td class="alignC">Jul 17, 2026</td>
+    <td class="alignC">Jul 20, 2026</td>
+    <td class="alignC">Jul 30, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('1d9e77ccd32601f664d70b69f0a3140b');return false;">C02290-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=43">Oriental Petroleum and Minerals Corporation</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">PHP 0.0005 per common share</td>
+    <td class="alignC">Jul 02, 2026</td>
+    <td class="alignC">Jul 3, 2026</td>
+    <td class="alignC">Jul 28, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('d390731d940d590364d70b69f0a3140b');return false;">C04131-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=633">GT Capital Holdings, Inc.</a></td>
+    <td class="alignC">GTPPB</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php12.73725</td>
+    <td class="alignC">Jul 03, 2026</td>
+    <td class="alignC">Jul 6, 2026</td>
+    <td class="alignC">Jul 27, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('c8670b92f5249b0aec6e1601ccee8f59');return false;">C08654-2025</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=166">Synergy Grid &amp; Development Phils., Inc.</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">PhP0.3474</td>
+    <td class="alignC">Jul 07, 2026</td>
+    <td class="alignC">Jul 8, 2026</td>
+    <td class="alignC">Jul 24, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('a38e65e0b4cbcd5c64d70b69f0a3140b');return false;">C04705-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=223">Centro Escolar University</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">1.00</td>
+    <td class="alignC">Jun 29, 2026</td>
+    <td class="alignC">Jun 30, 2026</td>
+    <td class="alignC">Jul 23, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('e6ffbe66003b6b7b64d70b69f0a3140b');return false;">C03877-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=658">SBS Philippines Corporation</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php0.0035</td>
+    <td class="alignC">Jul 09, 2026</td>
+    <td class="alignC">Jul 10, 2026</td>
+    <td class="alignC">Jul 22, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('092aa79184aed2db64d70b69f0a3140b');return false;">C04831-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=154">San Miguel Corporation</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php0.35</td>
+    <td class="alignC">Jun 25, 2026</td>
+    <td class="alignC">Jun 26, 2026</td>
+    <td class="alignC">Jul 22, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('3e3cda608831af7a64d70b69f0a3140b');return false;">C04274-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=86">Jollibee Foods Corporation</a></td>
+    <td class="alignC">JFCPB</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php10.60125 per share for Series B preferred shares (JFCPB)</td>
+    <td class="alignC">Jul 01, 2026</td>
+    <td class="alignC">Jul 2, 2026</td>
+    <td class="alignC">Jul 15, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('6172bece29df58d064d70b69f0a3140b');return false;">C04480-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=57">Ayala Corporation</a></td>
+    <td class="alignC">ACPB3</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">Php30.269</td>
+    <td class="alignC">Jun 26, 2026</td>
+    <td class="alignC">Jun 29, 2026</td>
+    <td class="alignC">Jul 15, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('1c678444153581a164d70b69f0a3140b');return false;">C04438-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=692">Bank of Commerce</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">P0.20</td>
+    <td class="alignC">Jun 18, 2026</td>
+    <td class="alignC">Jun 19, 2026</td>
+    <td class="alignC">Jul 15, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('2d1ff03b05359a9d64d70b69f0a3140b');return false;">C03911-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=692">Bank of Commerce</a></td>
+    <td class="alignC">COMMON</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">P0.25</td>
+    <td class="alignC">Jun 18, 2026</td>
+    <td class="alignC">Jun 19, 2026</td>
+    <td class="alignC">Jul 15, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('e487138fbd397fa164d70b69f0a3140b');return false;">C03896-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=651">DoubleDragon Corporation</a></td>
+    <td class="alignC">DDPR</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">PhP2.42125</td>
+    <td class="alignC">Jun 30, 2026</td>
+    <td class="alignC">Jul 1, 2026</td>
+    <td class="alignC">Jul 14, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('deb92661fe6dfc6064d70b69f0a3140b');return false;">C04498-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=627">Megawide Construction Corporation</a></td>
+    <td class="alignC">MWP6C</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">2.074825</td>
+    <td class="alignC">Jun 26, 2026</td>
+    <td class="alignC">Jun 29, 2026</td>
+    <td class="alignC">Jul 14, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('363f57a52a1ff27264d70b69f0a3140b');return false;">C04310-2026</a></td>
+  </tr>
+<tr>
+    <td><a href="/companyInformation/form.do?cmpy_id=627">Megawide Construction Corporation</a></td>
+    <td class="alignC">MWP6B</td>
+    <td class="alignC">Cash</td>
+    <td class="alignR">1.99015</td>
+    <td class="alignC">Jun 26, 2026</td>
+    <td class="alignC">Jun 29, 2026</td>
+    <td class="alignC">Jul 14, 2026</td>
+    <td class="alignC"><a href="#viewer" onclick="openPopup('8c9803b25e0e178064d70b69f0a3140b');return false;">C04309-2026</a></td>
+  </tr>
+</tbody>
+</table>
+
+<div class="paging"><a href="#" onclick="return false;"><img src="/images/common/icon_first.gif" alt="first page"/></a>
+<a href="#" onclick="return false;"><img src="/images/common/icon_prev.gif" alt="prev block"/></a>
+<span>1</span>
+<span><a href="#" onclick="goPage(2);return false;" >2</a></span>
+<span><a href="#" onclick="goPage(3);return false;" >3</a></span>
+<span><a href="#" onclick="goPage(4);return false;" >4</a></span>
+<span><a href="#" onclick="goPage(5);return false;" >5</a></span>
+<span><a href="#" onclick="goPage(6);return false;" >6</a></span>
+<span><a href="#" onclick="goPage(7);return false;" >7</a></span>
+<span><a href="#" onclick="goPage(8);return false;" >8</a></span>
+<span><a href="#" onclick="goPage(9);return false;" >9</a></span>
+<span><a href="#" onclick="goPage(10);return false;" >10</a></span>
+<a href="#" onclick="goPage(11);return false;" ><img src="/images/common/icon_next.gif" alt="next block"/></a>
+<a href="#" onclick="goPage(11);return false;"><img src="/images/common/icon_end.gif" alt="last page"/></a></div><p class="disclaimer">
+<span style="font-size:105%;">DISCLAIMER</span><br/>
+The data, information and other contents (the "Contents") appearing on or accessible through
+http://www.exchange.com may not have been prepared by the Exchange but is made available without any responsibility
+on the part of the PSE, or even if prepared by the PSE, is provided on an as is or as available basis.
+The PSE does not guarantee the accuracy, timeliness, completeness,
+performance or fitness for a particular purpose of any and all Contents of this page.
+Your access to and use of this page and its Contents is subject to all applicable international
+and local laws and regulations and the terms and conditions imposed by the PSE under our
+<a href="/page/disclaimer.do">[Disclaimer and Access and Usage Restrictions]</a>.
+By continuing to access and use this page and its Contents, you shall be deemed to have read, understood,
+and agreed to, said terms and conditions.
+</p><a href="https://edge.pse.com.ph/cdn-cgi/content?id=3khkrtb2II63IUicc64Il9vjBVEmAM0i1CwQkXCTjZc-1784152549.7374797-1.2.1.1-7foP_.tZzVNNyD5qGyOw8jSQvZRJhs_QwAknYZNm4yA" aria-hidden="true" rel="nofollow noopener" style="display: none !important; visibility: hidden !important"></a>
