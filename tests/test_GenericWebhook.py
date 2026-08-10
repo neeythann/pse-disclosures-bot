@@ -141,19 +141,38 @@ class TestFetchDisclosureLinks:
 
 class TestHmacHeaders:
 
+    @staticmethod
+    def _expected(timestamp: str, secret: str, body: bytes) -> str:
+        message = "{}.".format(timestamp).encode() + body
+        return hmac.new(secret.encode(), message, hashlib.sha256).hexdigest()
+
     def test_no_secret_adds_no_signature(self, monkeypatch):
         monkeypatch.setattr("src.main.config.hmac_secret", None)
         assert _build_headers(b'{"a":1}') == {"Content-Type": "application/json"}
 
-    def test_secret_adds_signature_header(self, monkeypatch):
+    def test_secret_adds_signature_and_timestamp_headers(self, monkeypatch):
         monkeypatch.setattr("src.main.config.hmac_secret", "s3cret")
+        monkeypatch.setattr("src.main.time", lambda: 1700000000)
         body = b'{"a":1}'
         headers = _build_headers(body)
-        expected = "sha256=" + hmac.new(b"s3cret", body, hashlib.sha256).hexdigest()
-        assert headers["X-HMAC-Signature"] == expected
+        assert headers["X-Webhook-Timestamp"] == "1700000000"
+        assert headers["X-Webhook-Signature-V2"] == self._expected("1700000000", "s3cret", body)
+
+    def test_custom_header_names_from_config(self, monkeypatch):
+        monkeypatch.setattr("src.main.config.hmac_secret", "s3cret")
+        monkeypatch.setattr("src.main.config.signature_header", "X-Custom-Sig")
+        monkeypatch.setattr("src.main.config.timestamp_header", "X-Custom-Ts")
+        monkeypatch.setattr("src.main.time", lambda: 1700000000)
+        body = b'{"a":1}'
+        headers = _build_headers(body)
+        assert headers["X-Custom-Ts"] == "1700000000"
+        assert headers["X-Custom-Sig"] == self._expected("1700000000", "s3cret", body)
+        assert "X-Webhook-Signature-V2" not in headers
+        assert "X-Webhook-Timestamp" not in headers
 
     def test_send_posts_signed_body(self, monkeypatch):
         monkeypatch.setattr("src.main.config.hmac_secret", "s3cret")
+        monkeypatch.setattr("src.main.time", lambda: 1700000000)
         captured = {}
 
         def fake_post(url, data, headers):
@@ -170,4 +189,5 @@ class TestHmacHeaders:
         assert captured["url"] == "https://listener.example.com/hook"
         assert captured["data"] == body
         assert captured["headers"]["Content-Type"] == "application/json"
-        assert captured["headers"]["X-HMAC-Signature"] == "sha256=" + hmac.new(b"s3cret", body, hashlib.sha256).hexdigest()
+        assert captured["headers"]["X-Webhook-Timestamp"] == "1700000000"
+        assert captured["headers"]["X-Webhook-Signature-V2"] == self._expected("1700000000", "s3cret", body)
