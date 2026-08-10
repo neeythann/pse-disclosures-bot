@@ -58,6 +58,17 @@ Optionally set `DB_PATH` to override the SQLite database location (defaults to
 export DB_PATH="/data/pse_disclosures.db"
 ```
 
+Optionally set `HMAC_SECRET` to sign every webhook payload with HMAC-SHA256.
+The shared secret authenticates requests to receivers that are otherwise
+unauthenticated. When set, the serialized JSON body is hashed with the secret
+and sent in the `X-HMAC-Signature` header as `sha256=<hex digest>`; receivers
+verify by recomputing the digest over the raw request body. If unset, no
+signature header is added.
+
+```sh
+export HMAC_SECRET="a-long-random-shared-secret"
+```
+
 ## Running
 
 ```sh

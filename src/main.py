@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+import hashlib
+import hmac
+import json
 import random
+import re
 import requests
 import logging
 
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from time import sleep
 from typing import Dict, Any, List, Union
 from urllib.parse import urlparse
@@ -23,6 +27,11 @@ TABLE_BY_KEY = {
     "dividends": "dividends",
     "rights": "stock_rights",
 }
+
+OPEN_DISC_VIEWER_URL = "https://edge.pse.com.ph/openDiscViewer.do?edge_no={}"
+DOWNLOAD_FILE_URL = "https://edge.pse.com.ph/downloadFile.do?file_id={}"
+
+_disclosure_links_cache: Dict[str, Dict[str, Any]] = {}
 
 
 def _rows(soup: Tag) -> List[Tag]:
@@ -48,7 +57,18 @@ class Webhook:
         raise NotImplementedError
 
     def send(self) -> None:
-        raise NotImplementedError
+        payload = self._format_data()
+        body = json.dumps(payload).encode()
+        headers = _build_headers(body)
+        requests.post(self.url, data=body, headers=headers)
+
+
+def _build_headers(body: bytes) -> Dict[str, str]:
+    headers: Dict[str, str] = {"Content-Type": "application/json"}
+    if config.hmac_secret:
+        digest = hmac.new(config.hmac_secret.encode(), body, hashlib.sha256).hexdigest()
+        headers["X-HMAC-Signature"] = "sha256={}".format(digest)
+    return headers
 
 
 @dataclass
@@ -62,9 +82,6 @@ class DiscordWebhook(Webhook):
             "avatar_url": "",
             "embeds": [self.data.to_embed()],
         }
-
-    def send(self) -> None:
-        requests.post(self.url, json=self._format_data(), headers={"Content-Type": "application/json"})
 
 
 @dataclass
@@ -96,8 +113,25 @@ class SlackWebhook(Webhook):
             attachment["footer"] = footer["text"]
         return {"attachments": [attachment]}
 
-    def send(self) -> None:
-        requests.post(self.url, json=self._format_data(), headers={"Content-Type": "application/json"})
+
+@dataclass
+class GenericWebhook(Webhook):
+    url: str
+    data: Union["CompanyDisclosure", "Dividend", "StockRights"]
+
+    def _format_data(self) -> Dict[Any, Any]:
+        payload: Dict[Any, Any] = {
+            "type": type(self.data).__name__,
+            "object": asdict(self.data),
+            "viewer_url": OPEN_DISC_VIEWER_URL.format(self.data.edge_no),
+        }
+        links = _fetch_disclosure_links(self.data.edge_no)
+        if links is not None:
+            payload["main_doc_url"] = links["main_doc_url"]
+            payload["attachment_links"] = links["attachment_links"]
+        else:
+            logging.error("Could not fetch disclosure links for edge_no {}".format(self.data.edge_no))
+        return payload
 
 
 def create_webhook(url: str, data: Any) -> Webhook:
@@ -106,7 +140,7 @@ def create_webhook(url: str, data: Any) -> Webhook:
         return DiscordWebhook(url, data)
     if "hooks.slack.com" in host:
         return SlackWebhook(url, data)
-    raise ValueError("No webhook sender configured for URL host: {}".format(host))
+    return GenericWebhook(url, data)
 
 
 @dataclass(unsafe_hash=True)
@@ -321,6 +355,41 @@ def _fetch(key: str, url: str, data: Dict[str, str] = None) -> Any: #pyright: ig
         return None
 
     return response
+
+
+def _parse_viewer_links(soup: Tag) -> Dict[str, Any]:
+    main_doc_url = ""
+    iframe = soup.find("iframe", id="viewContents")
+    if iframe is not None and iframe.get("src"):
+        main_doc_url = "https://edge.pse.com.ph{}".format(iframe["src"])
+
+    attachment_links: List[Dict[str, str]] = []
+    file_list = soup.find("select", id="file_list")
+    if file_list is not None:
+        for option in file_list.find_all("option"):
+            file_id = option.get("value")
+            if file_id:
+                attachment_links.append({
+                    "name": re.sub(r"\s+", " ", option.get_text()).strip(),
+                    "url": DOWNLOAD_FILE_URL.format(file_id),
+                })
+
+    return {
+        "main_doc_url": main_doc_url,
+        "attachment_links": attachment_links,
+    }
+
+
+def _fetch_disclosure_links(edge_no: str) -> Dict[str, Any]:
+    if edge_no in _disclosure_links_cache:
+        return _disclosure_links_cache[edge_no]
+    response = requests.get(OPEN_DISC_VIEWER_URL.format(edge_no), headers=config.headers)
+    if response.status_code != 200:
+        return None #pyright: ignore
+    soup = BeautifulSoup(response.content, 'html.parser')
+    links = _parse_viewer_links(soup)
+    _disclosure_links_cache[edge_no] = links
+    return links
 
 
 def _notify(items: List[Any]) -> None:
