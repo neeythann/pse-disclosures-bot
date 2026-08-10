@@ -58,15 +58,26 @@ Optionally set `DB_PATH` to override the SQLite database location (defaults to
 export DB_PATH="/data/pse_disclosures.db"
 ```
 
-Optionally set `HMAC_SECRET` to sign every webhook payload with HMAC-SHA256.
-The shared secret authenticates requests to receivers that are otherwise
-unauthenticated. When set, the serialized JSON body is hashed with the secret
-and sent in the `X-HMAC-Signature` header as `sha256=<hex digest>`; receivers
-verify by recomputing the digest over the raw request body. If unset, no
-signature header is added.
+Optionally set `HMAC_SECRET` to sign every webhook payload with HMAC-SHA256
+(Generic V2 scheme). The shared secret authenticates requests to receivers
+that are otherwise unauthenticated, and the included timestamp prevents
+captured requests from being replayed later. When set, each request carries:
+
+- `X-Webhook-Signature-V2` — the hex HMAC-SHA256 digest of
+  `<timestamp>.<body>` (the serialized JSON body prefixed with the timestamp
+  and a dot)
+- `X-Webhook-Timestamp` — the current Unix time in seconds
+
+Receivers verify by checking the timestamp is within ±300 seconds of their
+clock and recomputing the digest over `<timestamp>.<received_body>` with the
+shared secret. If unset, no signature headers are added.
+
+Both header names are env-configurable:
 
 ```sh
 export HMAC_SECRET="a-long-random-shared-secret"
+export WEBHOOK_SIGNATURE_HEADER="X-Webhook-Signature-V2"   # optional
+export WEBHOOK_TIMESTAMP_HEADER="X-Webhook-Timestamp"      # optional
 ```
 
 ## Running

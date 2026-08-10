@@ -32,6 +32,8 @@ class Config:
                 raise ValueError("WEBHOOK_URL is required when OUTPUT_MODE is 'both' or 'webhook'")
             inst.webhook_urls = webhook_urls
             inst.hmac_secret = (os.getenv("HMAC_SECRET") or "").strip() or None
+            inst.signature_header = (os.getenv("WEBHOOK_SIGNATURE_HEADER") or "X-Webhook-Signature-V2").strip()
+            inst.timestamp_header = (os.getenv("WEBHOOK_TIMESTAMP_HEADER") or "X-Webhook-Timestamp").strip()
             inst.mode = mode
             inst.poll_interval = 60 * 5 # 5 mins
             inst.headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.5938.149 Safari/537.36"}

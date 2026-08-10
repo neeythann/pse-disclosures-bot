@@ -77,3 +77,21 @@ class TestConfig:
         monkeypatch.setenv("HMAC_SECRET", "  my-shared-secret  ")
         c = Config()
         assert c.hmac_secret == "my-shared-secret"
+
+
+    def test_header_names_default(self, monkeypatch):
+        monkeypatch.delenv("WEBHOOK_SIGNATURE_HEADER", raising=False)
+        monkeypatch.delenv("WEBHOOK_TIMESTAMP_HEADER", raising=False)
+        monkeypatch.setenv("WEBHOOK_URL", "https://x")
+        c = Config()
+        assert c.signature_header == "X-Webhook-Signature-V2"
+        assert c.timestamp_header == "X-Webhook-Timestamp"
+
+
+    def test_header_names_read_env(self, monkeypatch):
+        monkeypatch.setenv("WEBHOOK_URL", "https://x")
+        monkeypatch.setenv("WEBHOOK_SIGNATURE_HEADER", " X-Sig ")
+        monkeypatch.setenv("WEBHOOK_TIMESTAMP_HEADER", " X-Ts ")
+        c = Config()
+        assert c.signature_header == "X-Sig"
+        assert c.timestamp_header == "X-Ts"

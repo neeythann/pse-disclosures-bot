@@ -11,7 +11,7 @@ import logging
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
 from dataclasses import asdict, dataclass
-from time import sleep
+from time import sleep, time
 from typing import Dict, Any, List, Union
 from urllib.parse import urlparse
 
@@ -66,8 +66,11 @@ class Webhook:
 def _build_headers(body: bytes) -> Dict[str, str]:
     headers: Dict[str, str] = {"Content-Type": "application/json"}
     if config.hmac_secret:
-        digest = hmac.new(config.hmac_secret.encode(), body, hashlib.sha256).hexdigest()
-        headers["X-HMAC-Signature"] = "sha256={}".format(digest)
+        timestamp = str(int(time()))
+        message = "{}.".format(timestamp).encode() + body
+        digest = hmac.new(config.hmac_secret.encode(), message, hashlib.sha256).hexdigest()
+        headers[config.signature_header] = digest
+        headers[config.timestamp_header] = timestamp
     return headers
 
 
