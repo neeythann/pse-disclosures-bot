@@ -64,3 +64,16 @@ class TestConfig:
         monkeypatch.setenv("WEBHOOK_URL", "https://discord.com/api/webhooks/x")
         c = Config()
         assert c.webhook_urls == ["https://discord.com/api/webhooks/x"]
+
+
+    def test_hmac_secret_defaults_to_none(self, monkeypatch):
+        monkeypatch.delenv("HMAC_SECRET", raising=False)
+        monkeypatch.setenv("WEBHOOK_URL", "https://x")
+        assert Config().hmac_secret is None
+
+
+    def test_hmac_secret_reads_env(self, monkeypatch):
+        monkeypatch.setenv("WEBHOOK_URL", "https://x")
+        monkeypatch.setenv("HMAC_SECRET", "  my-shared-secret  ")
+        c = Config()
+        assert c.hmac_secret == "my-shared-secret"

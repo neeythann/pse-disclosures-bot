@@ -1,6 +1,5 @@
-import pytest
 from bs4 import BeautifulSoup
-from src.main import create_webhook, DiscordWebhook, SlackWebhook, Webhook
+from src.main import create_webhook, DiscordWebhook, SlackWebhook, GenericWebhook, Webhook
 
 
 class TestCreateWebhook:
@@ -22,9 +21,10 @@ class TestCreateWebhook:
         assert isinstance(wh, Webhook)
 
 
-    def test_unknown_host_raises(self):
-        with pytest.raises(ValueError):
-            create_webhook("https://example.com/hook", None)
+    def test_unknown_host_falls_back_to_generic(self):
+        wh = create_webhook("https://example.com/hook", None)
+        assert isinstance(wh, GenericWebhook)
+        assert isinstance(wh, Webhook)
 
 
 class TestSlackWebhookFormat:
